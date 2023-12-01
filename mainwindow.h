@@ -17,8 +17,13 @@ public:
 
 private slots:
     void on_addTaskButton_clicked();
+    //Контекстне меню
+    void editTaskTriggered();
+    void finishTaskTriggered();
+    void showContextMenu(const QPoint &pos);
 
 private:
     Ui::MainWindow *ui;
+    int row;
 };
 #endif // MAINWINDOW_H
