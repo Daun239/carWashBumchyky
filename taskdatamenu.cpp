@@ -20,8 +20,15 @@ taskDataMenu::taskDataMenu(QTableWidget* table , int row , QWidget *parent) :
     ui->timeComboBox->setCurrentIndex(-1);
 
     //Workers combo box
-    ui->workersComboBox->addItem("Loh");
-    ui->workersComboBox->addItem("Daun");
+    //Object with workers names
+    WorkersList stuff;
+    stuff.addName("Sanya");
+    stuff.addName("Roma");
+    stuff.addName("Sviat");
+    stuff.removeName("Sviat");
+    for(int i = 0; i < stuff.getSize();++i){
+        ui->workersComboBox->addItem(QString::fromStdString(stuff.getNameByIndex(i)));
+    }
     ui->workersComboBox->setCurrentIndex(-1);
 
     //Task combo box
