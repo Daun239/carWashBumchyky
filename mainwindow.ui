@@ -6,92 +6,216 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>778</width>
+    <height>429</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="addTaskButton">
+   <widget class="QLabel" name="currentTimeLabel">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>320</y>
+      <x>10</x>
+      <y>50</y>
       <width>121</width>
-      <height>24</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>Add a task</string>
+     <string/>
     </property>
    </widget>
-   <widget class="QTableWidget" name="currentTable">
+   <widget class="QStackedWidget" name="stackedWidget">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>20</y>
-      <width>601</width>
-      <height>271</height>
+      <x>10</x>
+      <y>0</y>
+      <width>761</width>
+      <height>459</height>
      </rect>
     </property>
-    <column>
-     <property name="text">
-      <string>№</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Workers</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Task type</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Price</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>Beginning time</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>End time</string>
-     </property>
-    </column>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>320</y>
-      <width>111</width>
-      <height>24</height>
-     </rect>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
-    <property name="text">
-     <string>Finish task</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_2">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>320</y>
-      <width>131</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Change task info</string>
-    </property>
+    <widget class="QWidget" name="MainPage">
+     <widget class="QToolButton" name="changeWorkers">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>20</y>
+        <width>22</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>...</string>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::RightArrow</enum>
+      </property>
+     </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>731</width>
+        <height>321</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QTableWidget" name="currentTable">
+         <column>
+          <property name="text">
+           <string>№</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Workers</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Task type</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Price</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Beginning time</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>End time</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="addTaskButton">
+         <property name="text">
+          <string>Add a task</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="ChangeWorkersPage">
+     <widget class="QToolButton" name="workersToolButton">
+      <property name="geometry">
+       <rect>
+        <x>360</x>
+        <y>80</y>
+        <width>71</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>...</string>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::NoArrow</enum>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>0</y>
+        <width>151</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Choose worker to delete</string>
+      </property>
+     </widget>
+     <widget class="QToolButton" name="goBackToolButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>22</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>...</string>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::LeftArrow</enum>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="workersComboBox">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>320</y>
+        <width>72</width>
+        <height>24</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>110</y>
+        <width>113</width>
+        <height>24</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>60</y>
+        <width>201</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enter the name of the worker to add</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="addWorkerButton">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>170</y>
+        <width>80</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add worker</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="deleteWorkerButton">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>170</y>
+        <width>111</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Delete the worker</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -99,12 +223,27 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>22</height>
+     <width>778</width>
+     <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFIle">
+    <property name="title">
+     <string>file</string>
+    </property>
+    <addaction name="actionsave"/>
+   </widget>
+   <addaction name="menuFIle"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionsave">
+   <property name="text">
+    <string>save...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

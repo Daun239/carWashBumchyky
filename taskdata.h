@@ -5,39 +5,34 @@
 #include <chrono>
 #include <vector>
 #include <algorithm>
-
-typedef std::chrono::time_point<std::chrono::system_clock> TIME;
+#include <QString>
+#include <QTime>
 
 class taskData
 {
 public:
-    taskData(std::list<std::string>& workers , taskType& type , std::pair<int, int> beginningTime , std::pair<int,int> endTime);
+    taskData(int& number , QList<QString>& workers , taskName type , QTime& beginningTime , QTime& endTime) :
+        number(number) , workers(workers) , type(type) , beginningTime(beginningTime) , endTime(endTime) {} ;
+    taskData() { }
+    // Setters
+    void setTask(taskName type ) { this->type = type ; }
+    void setWorkers(QList<QString>& workers ) { this->workers = workers ;}
+    void setBeginningTime(const QTime& time ) { beginningTime = time ; }
+    void setEndTime(const QTime& time) { endTime = time ; }
+    void setNumber(const int& num) { number = num; }
 
-    std::list<std::string> getWorkers() const noexcept { return workers ; }
-
-    const std::pair<int,int> getBeginningTime() const noexcept { return beginningTime; }
-
-    const std::pair<int,int> getEndTime() const noexcept { return endTime ; }
-
-    taskType getTask() const noexcept { return type ; }
+    //Getters
+    QList<QString> getWorkers() const noexcept { return workers ; }
+    const QTime getBeginningTime() const noexcept { return beginningTime; }
+    const QTime getEndTime() const noexcept { return endTime ; }
+    taskName getTask() const noexcept { return type ; }
 
 private :
-    std::list<std::string> workers;
-    taskType type;
-    std::pair<int,int> beginningTime;
-    std::pair<int,int> endTime;
-};
-
-class WorkersList {
-private:
-    std::vector<std::string> workerNames;
-
-public:
-    void addName(const std::string& name);
-    void removeName(const std::string& name);
-    int getSize();
-    std::string getNameByIndex(int index);
-
+    int number;
+    QList<QString> workers;
+    taskName type;
+    QTime beginningTime;
+    QTime endTime;
 };
 
 #endif // TASKDATA_H
