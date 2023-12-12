@@ -5,9 +5,12 @@
 #include <ctime>
 
 
+/*
+extern QList<QAction*> menuActions;
+extern WorkersList workersList;
 extern std::vector<taskData> allTasks;
 
-taskDataMenu::taskDataMenu(QTableWidget* table , int row , QWidget *parent) :
+ taskDataMenu::taskDataMenu(QTableWidget* table , int row , QWidget *parent) :
     QDialog(parent),
     ui(new Ui::taskDataMenu) ,
     table(table),
@@ -20,12 +23,14 @@ taskDataMenu::taskDataMenu(QTableWidget* table , int row , QWidget *parent) :
 
 
     //Workers combo box
-    ui->workersComboBox->addItem("Loh");
-    ui->workersComboBox->addItem("Daun");
-
+    for (int i = 0 ; i < workersList.getSize(); ++i) {
+        ui->workersComboBox->addItem(QString::fromStdString(workersList.getNameByIndex(i)));
+    }
 
     //Task combo box
-    ui->taskTypeComboBox->addItem("Carwash");
+    ui->taskTypeComboBox->addItem("Body");
+    ui->taskTypeComboBox->addItem("Body and salon");
+    ui->taskTypeComboBox->addItem("Dry cleaning");
     ui->taskTypeComboBox->setCurrentIndex(0);
     if(row!=allTasks.size()){
         currWorkers=allTasks[row].getWorkers();
@@ -38,7 +43,7 @@ taskDataMenu::taskDataMenu(QTableWidget* table , int row , QWidget *parent) :
         std::string Workers=table->item(row,1)->text().toStdString();
         ui->workersLabel->setText(Workers.c_str());
          std::string FinishTime=table->item(row,5)->text().toStdString();
-        if(FinishTime=="*"){
+       /* if(FinishTime=="*"){
             ui->timeComboBox->setCurrentIndex(1);
             ui->beginHoursSpinBox->setValue(allTasks[row].getBeginningTime().first);
             ui->beginMinutesSpinBox->setValue(allTasks[row].getBeginningTime().second);
@@ -58,6 +63,7 @@ taskDataMenu::~taskDataMenu()
 {
     delete ui;
 }
+/*
 
 void taskDataMenu::on_addTaskButton_clicked()
 {
@@ -275,4 +281,4 @@ void taskDataMenu::on_removeWorkerButton_clicked()
     uMap.erase(current);
 }
 
-
+*/

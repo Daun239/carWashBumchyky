@@ -9,27 +9,5 @@ enum taskName {
     dryCleaning
 };
 
-struct taskType {
-public :
-    taskType(taskName newTask) {
-        changeTask(newTask);
-    }
-    void changeTask(taskName newTask) {
-            switch(newTask) {
-            case body:
-                price = 250;
-                break;
-            case bodyAndSalon :
-                price = 350;
-                break;
-            default :
-                price = 1800;
-        }
-    }
-    const int getPrice () const noexcept { return price ; }
-    int price;
-};
-
-
 
 #endif // TASKTYPE_H
