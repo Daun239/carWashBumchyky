@@ -35,8 +35,8 @@ private slots:
     void saveTasksToFile();
     void on_actionsave_triggered();
     void removeTask(unsigned int row);
-
     void addTask(bool createNew , taskData& existingTaskData);
+    void on_seeTheReportButton_clicked();
 
 private:
     Ui::MainWindow *ui;

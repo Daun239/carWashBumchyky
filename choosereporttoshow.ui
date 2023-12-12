@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>chooseReportToShow</class>
+ <widget class="QMainWindow" name="chooseReportToShow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTableWidget" name="reportTable">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>150</y>
+      <width>711</width>
+      <height>271</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>№</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Workers</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Task type</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Task price</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Beginning time</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>End time</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Time to complete the task</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QComboBox" name="sortByComboBox">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>60</y>
+      <width>72</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>20</y>
+      <width>171</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Show data for a specific worker</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>20</y>
+      <width>49</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sort by...</string>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="ascendingOrderButton">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>60</y>
+      <width>22</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+    <property name="arrowType">
+     <enum>Qt::UpArrow</enum>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="individualWorkersTable">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>430</y>
+      <width>711</width>
+      <height>192</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Worker</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Tasks completed</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Time spent</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Avg time for one task</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Money gained individually</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QComboBox" name="workersComboBox">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>60</y>
+      <width>72</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>20</y>
+      <width>171</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QDateEdit" name="dateEdit"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="showReportButton">
+       <property name="text">
+        <string>Show report</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

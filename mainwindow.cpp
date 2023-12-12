@@ -16,14 +16,16 @@
 #include <QStackedLayout>
 #include <QGridLayout>
 #include <QFormLayout>
-
-
+#include <QComboBox>
+#include "choosereporttoshow.h"
+#define BODY 250
+#define BODY_AND_SALON 350
+#define DRY_CLEANING 1800
 
 //Global variables
 bool isAdmin = false;
 int passwordCount = 0;
 int dayOfMonth, month, year;
-int tasksCount;
 QMenu* workersMenu;
 const QString realPassword = "123";
 QList<taskData*> allTasks;
@@ -77,7 +79,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_addTaskButton_clicked()
 {
     taskData* ptr;
-    addTask(false , *ptr);
+    addTask(true , *ptr);
 }
 
 
@@ -133,7 +135,7 @@ void MainWindow::readFileData() {
     year = now->tm_year + 1900;
 
     // Set the file name for data of this day
-    fileName = QString("data/ordinary/%1.%2.%3.txt").arg(year)
+    fileName = QString("data/ordinary/%1/%2/%3.%4.%5.txt").arg(year).arg(month).arg(year)
                    .arg(month < 10 ? "0" + QString::number(month) : QString::number(month))
                    .arg(dayOfMonth < 10 ? "0" + QString::number(dayOfMonth) : QString::number(dayOfMonth));
 
@@ -184,10 +186,19 @@ void MainWindow::readFileData() {
                 return;
             }
 
+            bool isOut = false;
             //Дізнаємось про працівників
-            for (i = index ; i < line.length() && line[i] != '|' ; ) {
-
-                while(i < line.length() && line[i++] != '"');
+            for (i = index+1 ; i < line.length() && line[i] != '|' ; ) {
+                while(i < line.length() && line[i] != '"') {
+                    if (line[i++] == '|') {
+                        isOut = true;
+                        break;
+                    }
+                }
+                if (isOut) {
+                    break;
+                }
+                ++i;
 
                 while(i < line.length() && line[i] != '"') {
                     curr += line[i++];
@@ -196,7 +207,9 @@ void MainWindow::readFileData() {
                     qDebug() << "Can't add an empty worker";
                     return;
                 }
+                ++i;
                 currWorkers.push_back(curr);
+                curr.clear();
             }
 
             // Дізнаємось про тип завдання.
@@ -222,13 +235,14 @@ void MainWindow::readFileData() {
                 currTask->setTask(dryCleaning);
                 break;
             }
+            i++;
 
             // Дізнаємось про початок виконання завдання
             curr.clear();
             while(i < line.length() && line[i++] != '"');
 
-            while(i < line.length() && line[i++] != ':') {
-                curr+= line[i];
+            while(i < line.length() && line[i] != ':') {
+                curr+= line[i++];
             }
             isConversionOk = false;
             int beginningHour = curr.toInt(&isConversionOk);
@@ -236,6 +250,7 @@ void MainWindow::readFileData() {
                 qDebug() << "Couldn't convert the hour of the beginning of the task";
                 return;
             }
+            i++;
             curr.clear();
             while(i < line.length() && line[i] != '"') {
                 curr+= line[i++];
@@ -265,12 +280,13 @@ void MainWindow::readFileData() {
                 qDebug() << "Couldn't convert end hour";
                 return;
             }
+            ++i;
             curr.clear();
             while (i < line.length() && line[i] != '"') {
                 curr+= line[i++];
             }
             isConversionOk = false;
-            int endMinute = curr.toInt();
+            int endMinute = curr.toInt(&isConversionOk);
             if (!isConversionOk) {
                 qDebug() << "Couldn't convert end minute";
                 return;
@@ -279,7 +295,7 @@ void MainWindow::readFileData() {
 
             currTask->setEndTime(currTaskEndTime);
 
-
+            addTask(false , *currTask);
         }
     } else {
         qDebug() << "Failed to open file for reading.";
@@ -366,7 +382,7 @@ bool MainWindow::createFolders() {
 
 void MainWindow::setupUi() {
 
-      ui->currentTable->setColumnCount(6);
+      ui->currentTable->setColumnCount(7);
 
     std::time_t t = std::time(0);
     std::tm* now = std::localtime(&t);
@@ -487,7 +503,7 @@ void MainWindow::saveWorkersToFile() {
 
 void MainWindow::on_actionsave_triggered()
 {
-    if (ui->stackedWidget->currentIndex()) {
+    if (!ui->stackedWidget->currentIndex()) {
         saveTasksToFile();
     }
     else {
@@ -514,7 +530,7 @@ void MainWindow::saveTasksToFile() {
         QTextStream out(&file);
         int i = 1 ;
         for (auto it : allTasks) {
-            out << "Number: " + QString::number(i) + " | Workers: ";
+            out << "Number: \"" + QString::number(i++) + "\" | Workers: ";
             for (auto workers : it->getWorkers()) {
                 out << '"' << workers << "\" ";
             }
@@ -533,18 +549,26 @@ void MainWindow::saveTasksToFile() {
 //-----------------------------------------------------------------------------
 
 void MainWindow::removeTask(unsigned int row) {
-    if (row >= tasksCount) {
+    if (row >= allTasks.size()) {
         QMessageBox::critical(this , "Error" , "Can't remove non existing row");
         return;
     }
+    for (int i = row + 1 ; i < allTasks.size() ; ++i) {
+        ui->currentTable->setItem(i , 0 , new QTableWidgetItem(QString::number(i)));
+    }
     ui->currentTable->removeRow(row);
     allTasks.remove(row);
+    beginningTimeEditList.remove(row);
+    endTimeEditList.remove(row);
+    workersLabels.remove(row);
+    priceLabels.remove(row);
+   // workersMenus.remove(row);
 }
 
 void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
-    ui->currentTable->setRowCount(++tasksCount);
+    ui->currentTable->setRowCount(allTasks.size() + 1);
 
-    ui->currentTable->setRowHeight(tasksCount - 1, 40);
+    ui->currentTable->setRowHeight(allTasks.size(), 40);
 
     // Create a QPushButton and QTimeEdit using dynamic allocation
     QPushButton* beginningTimeButton = new QPushButton(this);
@@ -552,6 +576,9 @@ void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
     QTimeEdit* beginningTimeEdit = new QTimeEdit(this);
     beginningTimeEditList.push_back(beginningTimeEdit);
     beginningTimeEdit->setDisplayFormat("hh:mm");  // Set the display format
+    if (!createNew) {
+        beginningTimeEdit->setTime(existingTaskData.getBeginningTime());
+    }
 
     // Create a QHBoxLayout and set the QTimeEdit and QPushButton as its widgets
     QHBoxLayout* layout = new QHBoxLayout;
@@ -566,6 +593,9 @@ void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
     QTimeEdit* endTimeEdit = new QTimeEdit(this);
     endTimeEditList.push_back(endTimeEdit);
     endTimeEdit->setDisplayFormat("hh:mm");  // Set the display format
+    if (!createNew) {
+        endTimeEdit->setTime(existingTaskData.getEndTime());
+    }
 
     // Create a QHBoxLayout for endTime and set the QTimeEdit as its widget
     QHBoxLayout* endTimeLayout = new QHBoxLayout;
@@ -578,11 +608,36 @@ void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
     QWidget* endTimeContainer = new QWidget(this);
     endTimeContainer->setLayout(endTimeLayout);
 
+    QLabel* priceLabel = new QLabel;
+
+    priceLabels.push_back(priceLabel);
+
     QComboBox* tasksComboBox = new QComboBox;
     tasksComboBox->addItem("...");
     tasksComboBox->addItem("Body");
     tasksComboBox->addItem("Body and salon");
     tasksComboBox->addItem("Dry cleaning");
+    if (!createNew) {
+        switch(existingTaskData.getTask()) {
+        case body :
+            tasksComboBox->setCurrentIndex(1);
+            priceLabel->setText(QString::number(BODY));
+            ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
+            break;
+        case bodyAndSalon :
+        tasksComboBox->setCurrentIndex(2);
+            priceLabel->setText(QString::number(BODY_AND_SALON));
+            ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
+        break;
+        case dryCleaning :
+        tasksComboBox->setCurrentIndex(3);
+        priceLabel->setText(QString::number(DRY_CLEANING));
+        ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
+        break;
+        default:
+        tasksComboBox->setCurrentIndex(0);
+    }
+    }
 
     QStackedLayout* tasksWidget = new QStackedLayout;
     tasksWidget->addWidget(tasksComboBox);
@@ -633,19 +688,33 @@ void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
     workersListLayout->addWidget(workersList);
     QWidget* workersListContainer = new QWidget;
     workersListContainer->setLayout(workersListLayout);
-
     workersList->setPopupMode(QToolButton::MenuButtonPopup); // QToolButton::InstantPopup);
+    if (!createNew) {
+        for (auto it : existingTaskData.getWorkers()) {
+            workersLabel->setText(workersLabel->text() + it);
+        }
+    }
 
-    // Insert the container widgets into the QTableWidget
-    ui->currentTable->setItem(tasksCount - 1, 0, new QTableWidgetItem(QString::number(tasksCount)));
-    ui->currentTable->setCellWidget(tasksCount - 1 , 1 , workersListContainer);
-    ui->currentTable->setCellWidget(tasksCount - 1 , 2 , tasksContainer);
-    ui->currentTable->setCellWidget(tasksCount - 1, 4, beginningTimeContainer);
-    ui->currentTable->setCellWidget(tasksCount - 1, 5, endTimeContainer);
-    ui->currentTable->setColumnWidth(4 , 150);
-    ui->currentTable->setColumnWidth(5 , 150);
+    QPushButton* removeButton = new QPushButton;
+    QStackedLayout* removeButtonLayout = new QStackedLayout;
+    removeButtonLayout->addWidget(removeButton);
+    QWidget * removeButtonContainer = new QWidget;
+    removeButtonContainer->setLayout(removeButtonLayout);
 
-    taskData* newTask = new taskData;
+    connect(removeButton, &QPushButton::pressed, this, [=]() {
+        int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+        removeTask(rowIndex);
+    });
+
+
+    taskData* newTask;
+
+    if (!createNew) {
+        newTask = new taskData(existingTaskData);
+    }
+    else {
+        newTask = new taskData;
+    }
 
     allTasks.push_back(newTask);
 
@@ -656,15 +725,15 @@ void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
                 switch(index) {
                 case 1 :
                     allTasks[rowIndex]->setTask(body);
-                    ui->currentTable->setItem(rowIndex , 3 , new QTableWidgetItem(QString::number(250)));
+                    priceLabels[rowIndex]->setText(QString::number(BODY));
                     break;
                 case 2 :
+                    priceLabels[rowIndex]->setText(QString::number(BODY_AND_SALON));
                     allTasks[rowIndex]->setTask(bodyAndSalon);
-                    ui->currentTable->setItem(rowIndex , 3 , new QTableWidgetItem(QString::number(350)));
                     break;
                 case 3 :
                     allTasks[rowIndex]->setTask(dryCleaning);
-                    ui->currentTable->setItem(rowIndex , 3 , new QTableWidgetItem(QString::number(1800)));
+                    priceLabels[rowIndex]->setText(QString::number(DRY_CLEANING));
                     break;
                 default :
                     qDebug() << "Default";
@@ -710,4 +779,22 @@ void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
         // Your code here (optional)
         // To prevent the menu from closing, call ignore() on it
     });
+
+    // Insert the container widgets into the QTableWidget
+    ui->currentTable->setItem(allTasks.size() - 1, 0, new QTableWidgetItem(QString::number(allTasks.size())));
+    ui->currentTable->setCellWidget(allTasks.size() - 1 , 1 , workersListContainer);
+    ui->currentTable->setCellWidget(allTasks.size() - 1 , 2 , tasksContainer);
+    ui->currentTable->setCellWidget(allTasks.size() - 1 , 3 , priceLabel);
+    ui->currentTable->setCellWidget(allTasks.size() - 1, 4, beginningTimeContainer);
+    ui->currentTable->setCellWidget(allTasks.size() - 1, 5, endTimeContainer);
+    ui->currentTable->setCellWidget(allTasks.size() - 1 , 6 , removeButtonContainer);
+    ui->currentTable->setColumnWidth(4 , 150);
+    ui->currentTable->setColumnWidth(5 , 150);
 }
+
+void MainWindow::on_seeTheReportButton_clicked()
+{
+    chooseReportToShow * ptr = new chooseReportToShow;
+    ptr->show();
+}
+

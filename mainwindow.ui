@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>778</width>
-    <height>429</height>
+    <width>884</width>
+    <height>475</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
      <rect>
       <x>10</x>
       <y>0</y>
-      <width>761</width>
+      <width>841</width>
       <height>459</height>
      </rect>
     </property>
@@ -56,12 +56,25 @@
        <enum>Qt::RightArrow</enum>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QPushButton" name="seeTheReportButton">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>400</y>
+        <width>291</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>See the report</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>20</x>
         <y>50</y>
-        <width>731</width>
+        <width>801</width>
         <height>321</height>
        </rect>
       </property>
@@ -98,6 +111,11 @@
            <string>End time</string>
           </property>
          </column>
+         <column>
+          <property name="text">
+           <string>Delete task</string>
+          </property>
+         </column>
         </widget>
        </item>
        <item>
@@ -111,22 +129,6 @@
      </widget>
     </widget>
     <widget class="QWidget" name="ChangeWorkersPage">
-     <widget class="QToolButton" name="workersToolButton">
-      <property name="geometry">
-       <rect>
-        <x>360</x>
-        <y>80</y>
-        <width>71</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>...</string>
-      </property>
-      <property name="arrowType">
-       <enum>Qt::NoArrow</enum>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
@@ -156,64 +158,67 @@
        <enum>Qt::LeftArrow</enum>
       </property>
      </widget>
-     <widget class="QComboBox" name="workersComboBox">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
-        <x>60</x>
-        <y>320</y>
-        <width>72</width>
-        <height>24</height>
+        <x>130</x>
+        <y>100</y>
+        <width>461</width>
+        <height>191</height>
        </rect>
       </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>110</y>
-        <width>113</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_3">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>60</y>
-        <width>201</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enter the name of the worker to add</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="addWorkerButton">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>170</y>
-        <width>80</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Add worker</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="deleteWorkerButton">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>170</y>
-        <width>111</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Delete the worker</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QToolButton" name="workersToolButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Workers list</string>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::NoArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="lineEdit"/>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="deleteWorkerButton">
+           <property name="text">
+            <string>Delete the worker</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="addWorkerButton">
+           <property name="text">
+            <string>Add worker</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </widget>
    </widget>
@@ -223,7 +228,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>778</width>
+     <width>884</width>
      <height>21</height>
     </rect>
    </property>
