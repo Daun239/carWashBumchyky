@@ -44,6 +44,7 @@ private:
     QString fileName;
     QMenu* menu;
     QAction* loh;
-
+    int activeCount;
+    std::vector<bool> busy;
 };
 #endif // MAINWINDOW_H

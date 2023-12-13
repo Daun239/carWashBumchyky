@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    activeCount=0;
     setWindowTitle("Carwash");
 
     ui->changeWorkers->setVisible(false);
@@ -78,8 +79,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_addTaskButton_clicked()
 {
-    taskData* ptr;
-    addTask(true , *ptr);
+    if(activeCount>=2){
+        QMessageBox::warning(this,"Warning", "There are too many active tasks!");
+    }else{
+        taskData* ptr;
+        addTask(true , *ptr);
+        activeCount++;
+    }
 }
 
 
@@ -449,6 +455,7 @@ void MainWindow::on_deleteWorkerButton_clicked()
         if (workersList[i]->isChecked()) {
             workersMenu->removeAction(workersList[i]);
             workersList.removeAt(i);
+            busy.erase(busy.begin()+i);
         }
     }
 }
@@ -458,7 +465,7 @@ void MainWindow::on_deleteWorkerButton_clicked()
 void MainWindow::on_addWorkerButton_clicked()
 {
     QString curr = ui->lineEdit->text();
-
+    busy.push_back(false);
     // Check if an action with the same name already exists
     bool actionExists = false;
     for (QAction* existingAction : workersList) {
@@ -566,230 +573,244 @@ void MainWindow::removeTask(unsigned int row) {
 }
 
 void MainWindow::addTask(bool createNew , taskData& existingTaskData) {
-    ui->currentTable->setRowCount(allTasks.size() + 1);
+        ui->currentTable->setRowCount(allTasks.size() + 1);
 
-    ui->currentTable->setRowHeight(allTasks.size(), 40);
+        ui->currentTable->setRowHeight(allTasks.size(), 40);
 
-    // Create a QPushButton and QTimeEdit using dynamic allocation
-    QPushButton* beginningTimeButton = new QPushButton(this);
-    beginningTimeButton->setText("Current");
-    QTimeEdit* beginningTimeEdit = new QTimeEdit(this);
-    beginningTimeEditList.push_back(beginningTimeEdit);
-    beginningTimeEdit->setDisplayFormat("hh:mm");  // Set the display format
-    if (!createNew) {
-        beginningTimeEdit->setTime(existingTaskData.getBeginningTime());
-    }
+        // Create a QPushButton and QTimeEdit using dynamic allocation
+        QPushButton* beginningTimeButton = new QPushButton(this);
+        beginningTimeButton->setText("Current");
+        QTimeEdit* beginningTimeEdit = new QTimeEdit(this);
+        beginningTimeEditList.push_back(beginningTimeEdit);
+        beginningTimeEdit->setDisplayFormat("hh:mm");  // Set the display format
+        if (!createNew) {
+            beginningTimeEdit->setTime(existingTaskData.getBeginningTime());
+        }
 
-    // Create a QHBoxLayout and set the QTimeEdit and QPushButton as its widgets
-    QHBoxLayout* layout = new QHBoxLayout;
-    layout->addWidget(beginningTimeEdit);
-    layout->addWidget(beginningTimeButton);
+        // Create a QHBoxLayout and set the QTimeEdit and QPushButton as its widgets
+        QHBoxLayout* layout = new QHBoxLayout;
+        layout->addWidget(beginningTimeEdit);
+        layout->addWidget(beginningTimeButton);
 
-    // Create a container widget to hold the layout
-    QWidget* beginningTimeContainer = new QWidget(this);
-    beginningTimeContainer->setLayout(layout);
+        // Create a container widget to hold the layout
+        QWidget* beginningTimeContainer = new QWidget(this);
+        beginningTimeContainer->setLayout(layout);
 
-    // Create QTimeEdit for endTime
-    QTimeEdit* endTimeEdit = new QTimeEdit(this);
-    endTimeEditList.push_back(endTimeEdit);
-    endTimeEdit->setDisplayFormat("hh:mm");  // Set the display format
-    if (!createNew) {
-        endTimeEdit->setTime(existingTaskData.getEndTime());
-    }
+        // Create QTimeEdit for endTime
+        QTimeEdit* endTimeEdit = new QTimeEdit(this);
+        endTimeEditList.push_back(endTimeEdit);
+        endTimeEdit->setDisplayFormat("hh:mm");  // Set the display format
+        if (!createNew) {
+            endTimeEdit->setTime(existingTaskData.getEndTime());
+        }
 
-    // Create a QHBoxLayout for endTime and set the QTimeEdit as its widget
-    QHBoxLayout* endTimeLayout = new QHBoxLayout;
-    QPushButton* endTimeButton = new QPushButton;
-    endTimeButton->setText("Current");
-    endTimeLayout->addWidget(endTimeEdit);
-    endTimeLayout->addWidget(endTimeButton);
+        // Create a QHBoxLayout for endTime and set the QTimeEdit as its widget
+        QHBoxLayout* endTimeLayout = new QHBoxLayout;
+        QPushButton* endTimeButton = new QPushButton;
+        endTimeButton->setText("Current");
+        endTimeLayout->addWidget(endTimeEdit);
+        endTimeLayout->addWidget(endTimeButton);
 
-    // Create a container widget for endTime
-    QWidget* endTimeContainer = new QWidget(this);
-    endTimeContainer->setLayout(endTimeLayout);
+        // Create a container widget for endTime
+        QWidget* endTimeContainer = new QWidget(this);
+        endTimeContainer->setLayout(endTimeLayout);
 
-    QLabel* priceLabel = new QLabel;
+        QLabel* priceLabel = new QLabel;
 
-    priceLabels.push_back(priceLabel);
+        priceLabels.push_back(priceLabel);
 
-    QComboBox* tasksComboBox = new QComboBox;
-    tasksComboBox->addItem("...");
-    tasksComboBox->addItem("Body");
-    tasksComboBox->addItem("Body and salon");
-    tasksComboBox->addItem("Dry cleaning");
-    if (!createNew) {
-        switch(existingTaskData.getTask()) {
-        case body :
-            tasksComboBox->setCurrentIndex(1);
-            priceLabel->setText(QString::number(BODY));
-            ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
-            break;
-        case bodyAndSalon :
-        tasksComboBox->setCurrentIndex(2);
-            priceLabel->setText(QString::number(BODY_AND_SALON));
-            ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
-        break;
-        case dryCleaning :
-        tasksComboBox->setCurrentIndex(3);
-        priceLabel->setText(QString::number(DRY_CLEANING));
-        ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
-        break;
-        default:
-        tasksComboBox->setCurrentIndex(0);
-    }
-    }
+        QComboBox* tasksComboBox = new QComboBox;
+        tasksComboBox->addItem("...");
+        tasksComboBox->addItem("Body");
+        tasksComboBox->addItem("Body and salon");
+        tasksComboBox->addItem("Dry cleaning");
+        if (!createNew) {
+            switch(existingTaskData.getTask()) {
+            case body :
+                tasksComboBox->setCurrentIndex(1);
+                priceLabel->setText(QString::number(BODY));
+                ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
+                break;
+            case bodyAndSalon :
+                tasksComboBox->setCurrentIndex(2);
+                priceLabel->setText(QString::number(BODY_AND_SALON));
+                ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
+                break;
+            case dryCleaning :
+                tasksComboBox->setCurrentIndex(3);
+                priceLabel->setText(QString::number(DRY_CLEANING));
+                ui->currentTable->setCellWidget(allTasks.size(), 3, priceLabel);
+                break;
+            default:
+                tasksComboBox->setCurrentIndex(0);
+            }
+        }
 
-    QStackedLayout* tasksWidget = new QStackedLayout;
-    tasksWidget->addWidget(tasksComboBox);
-    QWidget* tasksContainer = new QWidget;
-    tasksContainer->setLayout(tasksWidget);
+        QStackedLayout* tasksWidget = new QStackedLayout;
+        tasksWidget->addWidget(tasksComboBox);
+        QWidget* tasksContainer = new QWidget;
+        tasksContainer->setLayout(tasksWidget);
 
 
-    QMenu* individualMenu = new QMenu;
+        QMenu* individualMenu = new QMenu;
 
-    for (auto it : workersList) {
-        QAction* newAction = new QAction(it->text());
-        newAction->setCheckable(true);
-        newAction->setChecked(false);
-        individualMenu->addAction(newAction);
-
-        connect(newAction, &QAction::triggered, this, [=]() {
-            int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
-            QList<QString> currentWorkers;
-            if (newAction->isChecked() == false) {
-                workersLabels[rowIndex]->clear();
-                for (auto it2 : individualMenu->actions()) {
-                    if (it2->isChecked()) {
-                        workersLabels[rowIndex]->setText(workersLabels[rowIndex]->text() + " , " + it2->text());
-                        currentWorkers.push_back(it2->text());
+        int index = 0;
+        for (auto it : workersList) {
+            QAction* newAction = new QAction(it->text());
+            newAction->setCheckable(true);
+            newAction->setChecked(false);
+            individualMenu->addAction(newAction);
+            connect(newAction, &QAction::triggered, this, [=]() {
+                int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+                QList<QString> currentWorkers;
+                if (newAction->isChecked() == false) {
+                    busy[index] = false;
+                    workersLabels[rowIndex]->clear();
+                    for (auto it2 : individualMenu->actions()) {
+                        if (it2->isChecked()) {
+                            workersLabels[rowIndex]->setText(workersLabels[rowIndex]->text() + " , " + it2->text());
+                            currentWorkers.push_back(it2->text());
+                        }
+                    }
+                } else {
+                    if (busy[index] == false) {
+                        if (workersLabels[rowIndex]->text().isEmpty()) {
+                            workersLabels[rowIndex]->setText(workersLabels[rowIndex]->text() + newAction->text());
+                        } else {
+                            workersLabels[rowIndex]->setText(workersLabels[rowIndex]->text() + " , "  + newAction->text());
+                        }
+                        currentWorkers = allTasks[rowIndex]->getWorkers();
+                        currentWorkers.push_back(newAction->text());
+                        busy[index] = true;
+                        allTasks[rowIndex]->indeces.push_back(index);
+                    } else {
+                        QMessageBox::warning(this, "Warning", "This worker is busy! Check again to unselect him!");
                     }
                 }
-            }
-            else {
-                if (workersLabels[rowIndex]->text().isEmpty()) {
-                    workersLabels[rowIndex]->setText(workersLabels[rowIndex]->text() + newAction->text());
-                }
-                else {
-                    workersLabels[rowIndex]->setText(workersLabels[rowIndex]->text() + " , "  + newAction->text());
-                }
-                currentWorkers = allTasks[rowIndex]->getWorkers();
-                currentWorkers.push_back(newAction->text());
-            }
-            allTasks[rowIndex]->setWorkers(currentWorkers);
-        });
-    }
-
-    QLabel * workersLabel = new QLabel;
-    workersLabels.push_back(workersLabel);
-    QToolButton * workersList = new QToolButton;
-    workersList->setMenu(individualMenu);
-    QHBoxLayout * workersListLayout = new QHBoxLayout;
-    workersListLayout->addWidget(workersLabel);
-    workersListLayout->addWidget(workersList);
-    QWidget* workersListContainer = new QWidget;
-    workersListContainer->setLayout(workersListLayout);
-    workersList->setPopupMode(QToolButton::MenuButtonPopup); // QToolButton::InstantPopup);
-    if (!createNew) {
-        for (auto it : existingTaskData.getWorkers()) {
-            workersLabel->setText(workersLabel->text() + it);
-        }
-    }
-
-    QPushButton* removeButton = new QPushButton;
-    QStackedLayout* removeButtonLayout = new QStackedLayout;
-    removeButtonLayout->addWidget(removeButton);
-    QWidget * removeButtonContainer = new QWidget;
-    removeButtonContainer->setLayout(removeButtonLayout);
-
-    connect(removeButton, &QPushButton::pressed, this, [=]() {
-        int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
-        removeTask(rowIndex);
-    });
-
-
-    taskData* newTask;
-
-    if (!createNew) {
-        newTask = new taskData(existingTaskData);
-    }
-    else {
-        newTask = new taskData;
-    }
-
-    allTasks.push_back(newTask);
-
-    connect(tasksComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, [=](int index) {
-                int rowIndex = ui->currentTable->indexAt(tasksComboBox->mapTo(ui->currentTable, QPoint(0 , 0))).row();
-                qDebug() << index << "\t" << rowIndex;
-                switch(index) {
-                case 1 :
-                    allTasks[rowIndex]->setTask(body);
-                    priceLabels[rowIndex]->setText(QString::number(BODY));
-                    break;
-                case 2 :
-                    priceLabels[rowIndex]->setText(QString::number(BODY_AND_SALON));
-                    allTasks[rowIndex]->setTask(bodyAndSalon);
-                    break;
-                case 3 :
-                    allTasks[rowIndex]->setTask(dryCleaning);
-                    priceLabels[rowIndex]->setText(QString::number(DRY_CLEANING));
-                    break;
-                default :
-                    qDebug() << "Default";
-                }
+                allTasks[rowIndex]->setWorkers(currentWorkers);
             });
+            index++;
+        }
 
-    connect(beginningTimeButton, &QPushButton::clicked, this, [=]() {
-        int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+        QLabel * workersLabel = new QLabel;
+        workersLabels.push_back(workersLabel);
+        QToolButton * workersList = new QToolButton;
+        workersList->setMenu(individualMenu);
+        QHBoxLayout * workersListLayout = new QHBoxLayout;
+        workersListLayout->addWidget(workersLabel);
+        workersListLayout->addWidget(workersList);
+        QWidget* workersListContainer = new QWidget;
+        workersListContainer->setLayout(workersListLayout);
+        workersList->setPopupMode(QToolButton::MenuButtonPopup); // QToolButton::InstantPopup);
+        if (!createNew) {
+            for (auto it : existingTaskData.getWorkers()) {
+                workersLabel->setText(workersLabel->text() + it);
+            }
+        }
 
-        std::time_t t = std::time(0);
-        std::tm* now = std::localtime(&t);
-        QTime currTime;
-        currTime.setHMS(now->tm_hour, now->tm_min , 0 , 0);
-        beginningTimeEditList[rowIndex]->setTime(currTime);
-    });
+        QPushButton* removeButton = new QPushButton;
+        QStackedLayout* removeButtonLayout = new QStackedLayout;
+        removeButtonLayout->addWidget(removeButton);
+        QWidget * removeButtonContainer = new QWidget;
+        removeButtonContainer->setLayout(removeButtonLayout);
 
-    // Connect signals for the QPushButton in the end time column
-    connect(endTimeButton, &QPushButton::clicked, this, [=]() {
-        int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+        connect(removeButton, &QPushButton::pressed, this, [=]() {
+            activeCount--;
+            int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+            for(const auto& index: allTasks[rowIndex]->indeces){
+                busy[index]=false;
+            }
+            removeTask(rowIndex);
+        });
 
-        std::time_t t = std::time(0);
-        std::tm* now = std::localtime(&t);
-        QTime currTime;
-        currTime.setHMS(now->tm_hour, now->tm_min , 0 , 0);
-        endTimeEditList[rowIndex]->setTime(currTime);
-    });
 
-    connect(beginningTimeEdit, &QTimeEdit::timeChanged, this, [=](const QTime& newTime) {
+        taskData* newTask;
 
-        int rowIndex = ui->currentTable->indexAt(tasksComboBox->mapTo(ui->currentTable, QPoint(0 , 0))).row();
-        allTasks[rowIndex]->setBeginningTime(beginningTimeEdit->time());
-        qDebug() << "Time changed to: " << newTime.toString();
-    });
+        if (!createNew) {
+            newTask = new taskData(existingTaskData);
+        }
+        else {
+            newTask = new taskData;
+        }
 
-    connect(endTimeEdit, &QTimeEdit::timeChanged, this, [=](const QTime& newTime) {
+        allTasks.push_back(newTask);
 
-        int rowIndex = ui->currentTable->indexAt(tasksComboBox->mapTo(ui->currentTable, QPoint(0 , 0))).row();
-        allTasks[rowIndex]->setEndTime(endTimeEdit->time());
-        qDebug() << "Time changed to: " << newTime.toString();
-    });
+        connect(tasksComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this, [=](int index) {
+                    int rowIndex = ui->currentTable->indexAt(tasksComboBox->mapTo(ui->currentTable, QPoint(0 , 0))).row();
+                    qDebug() << index << "\t" << rowIndex;
+                    switch(index) {
+                    case 1 :
+                        allTasks[rowIndex]->setTask(body);
+                        priceLabels[rowIndex]->setText(QString::number(BODY));
+                        break;
+                    case 2 :
+                        priceLabels[rowIndex]->setText(QString::number(BODY_AND_SALON));
+                        allTasks[rowIndex]->setTask(bodyAndSalon);
+                        break;
+                    case 3 :
+                        allTasks[rowIndex]->setTask(dryCleaning);
+                        priceLabels[rowIndex]->setText(QString::number(DRY_CLEANING));
+                        break;
+                    default :
+                        qDebug() << "Default";
+                    }
+                });
 
-    connect(individualMenu, &QMenu::aboutToHide, [=]() {
-        // Your code here (optional)
-        // To prevent the menu from closing, call ignore() on it
-    });
+        connect(beginningTimeButton, &QPushButton::clicked, this, [=]() {
+            int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
 
-    // Insert the container widgets into the QTableWidget
-    ui->currentTable->setItem(allTasks.size() - 1, 0, new QTableWidgetItem(QString::number(allTasks.size())));
-    ui->currentTable->setCellWidget(allTasks.size() - 1 , 1 , workersListContainer);
-    ui->currentTable->setCellWidget(allTasks.size() - 1 , 2 , tasksContainer);
-    ui->currentTable->setCellWidget(allTasks.size() - 1 , 3 , priceLabel);
-    ui->currentTable->setCellWidget(allTasks.size() - 1, 4, beginningTimeContainer);
-    ui->currentTable->setCellWidget(allTasks.size() - 1, 5, endTimeContainer);
-    ui->currentTable->setCellWidget(allTasks.size() - 1 , 6 , removeButtonContainer);
-    ui->currentTable->setColumnWidth(4 , 150);
-    ui->currentTable->setColumnWidth(5 , 150);
+            std::time_t t = std::time(0);
+            std::tm* now = std::localtime(&t);
+            QTime currTime;
+            currTime.setHMS(now->tm_hour, now->tm_min , 0 , 0);
+            beginningTimeEditList[rowIndex]->setTime(currTime);
+        });
+
+        // Connect signals for the QPushButton in the end time column
+        connect(endTimeButton, &QPushButton::clicked, this, [=]() {
+            activeCount--;
+            int row = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+            for(const auto& index: allTasks[row]->indeces){
+                busy[index]=false;
+            }
+            int rowIndex = ui->currentTable->indexAt(beginningTimeButton->mapTo(ui->currentTable, QPoint(0, 0))).row();
+            std::time_t t = std::time(0);
+            std::tm* now = std::localtime(&t);
+            QTime currTime;
+            currTime.setHMS(now->tm_hour, now->tm_min , 0 , 0);
+            endTimeEditList[rowIndex]->setTime(currTime);
+        });
+
+        connect(beginningTimeEdit, &QTimeEdit::timeChanged, this, [=](const QTime& newTime) {
+
+            int rowIndex = ui->currentTable->indexAt(tasksComboBox->mapTo(ui->currentTable, QPoint(0 , 0))).row();
+            allTasks[rowIndex]->setBeginningTime(beginningTimeEdit->time());
+            qDebug() << "Time changed to: " << newTime.toString();
+        });
+
+        connect(endTimeEdit, &QTimeEdit::timeChanged, this, [=](const QTime& newTime) {
+
+            int rowIndex = ui->currentTable->indexAt(tasksComboBox->mapTo(ui->currentTable, QPoint(0 , 0))).row();
+            allTasks[rowIndex]->setEndTime(endTimeEdit->time());
+            qDebug() << "Time changed to: " << newTime.toString();
+        });
+
+        connect(individualMenu, &QMenu::aboutToHide, [=]() {
+            // Your code here (optional)
+            // To prevent the menu from closing, call ignore() on it
+        });
+
+        // Insert the container widgets into the QTableWidget
+        ui->currentTable->setItem(allTasks.size() - 1, 0, new QTableWidgetItem(QString::number(allTasks.size())));
+        ui->currentTable->setCellWidget(allTasks.size() - 1 , 1 , workersListContainer);
+        ui->currentTable->setCellWidget(allTasks.size() - 1 , 2 , tasksContainer);
+        ui->currentTable->setCellWidget(allTasks.size() - 1 , 3 , priceLabel);
+        ui->currentTable->setCellWidget(allTasks.size() - 1, 4, beginningTimeContainer);
+        ui->currentTable->setCellWidget(allTasks.size() - 1, 5, endTimeContainer);
+        ui->currentTable->setCellWidget(allTasks.size() - 1 , 6 , removeButtonContainer);
+        ui->currentTable->setColumnWidth(4 , 150);
+        ui->currentTable->setColumnWidth(5 , 150);
 }
 
 void MainWindow::on_seeTheReportButton_clicked()
