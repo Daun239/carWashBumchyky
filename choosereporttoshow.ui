@@ -142,7 +142,7 @@
     </column>
     <column>
      <property name="text">
-      <string>Money gained individually</string>
+      <string>Salary</string>
      </property>
     </column>
    </widget>
