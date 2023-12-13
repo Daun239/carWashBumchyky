@@ -19,7 +19,6 @@ static QList<taskData*> allTasks;
 static QSet<QString> workersList;
 
 
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -75,16 +74,14 @@ chooseReportToShow::chooseReportToShow(QWidget *parent) :
 
 }
 
+//-------------------------------------------------------------------------------
+
 chooseReportToShow::~chooseReportToShow()
 {
     delete ui;
 }
 
-void chooseReportToShow::on_cancelSelection_clicked()
-{
-
-}
-
+//-------------------------------------------------------------------------------
 
 void chooseReportToShow::on_showReportButton_clicked()
 {
@@ -258,12 +255,17 @@ void chooseReportToShow::on_showReportButton_clicked()
         insertWorkersIntoComboBox();
     }
    // printTable();
+    showIndividualWorkersInfo();
 }
+
+//-------------------------------------------------------------------------------
 
 void chooseReportToShow::addItemToTable() {
      QList<taskData*> allTasks;
 
 }
+
+//-------------------------------------------------------------------------------
 
 void chooseReportToShow::printTable() {
      qDebug() << "PRINT TABLE";
@@ -336,6 +338,7 @@ void chooseReportToShow::printTable() {
         ui->reportTable->setRowCount(tasksCompletedByWorker);
 }
 
+//-------------------------------------------------------------------------------
 
 void chooseReportToShow::on_ascendingOrderButton_clicked()
 {
@@ -343,6 +346,8 @@ void chooseReportToShow::on_ascendingOrderButton_clicked()
     sortTasks();
     printTable();
 }
+
+//-------------------------------------------------------------------------------
 
 void chooseReportToShow::reverseSwapOrder() {
     if (!isSortedAscending) {
@@ -352,6 +357,8 @@ void chooseReportToShow::reverseSwapOrder() {
     ui->ascendingOrderButton->setArrowType(Qt::ArrowType::DownArrow);
     isSortedAscending = !isSortedAscending;
 }
+
+//-------------------------------------------------------------------------------
 
 void chooseReportToShow::sortTasks() {
     switch(ui->sortByComboBox->currentIndex()) {
@@ -364,6 +371,8 @@ void chooseReportToShow::sortTasks() {
     }
 }
 
+//-------------------------------------------------------------------------------
+
 void chooseReportToShow::insertWorkersIntoComboBox() {
     qDebug() << "INSERTCOMBOBOX";
     ui->workersComboBox->clear();
@@ -373,6 +382,8 @@ void chooseReportToShow::insertWorkersIntoComboBox() {
     }
 }
 
+//-------------------------------------------------------------------------------
+
 void chooseReportToShow::showIndividualWorkersInfo() {
     ui->individualWorkersTable->setRowCount(workersList.size());
     QVector<workerData> workersData(workersList.size());
@@ -381,18 +392,24 @@ void chooseReportToShow::showIndividualWorkersInfo() {
     workersData[i++].name = it;
     }
     for (int i = 0 ; i < allTasks.size() ; ++i) {
-    if (allTasks[i]->getWorkers().contains(workersData[i].name)) {
-                workersData[i].moneyGained += allTasks[i]->getPrice();
-                workersData[i].tasksExecuted++;
-                //workersData[i].timeToExecuteTask += allTasks[i].get
-        }
+        for (int j = 0 ; j < workersData.size(); j++) {
+            if (allTasks[i]->getWorkers().contains(workersData[j].name)) {
+            workersData[j].moneyGained += allTasks[i]->getPrice() / allTasks[i]->getWorkers().size();
+            workersData[j].tasksExecuted++;
+            workersData[j].timeToExecuteTask = workersData[j].timeToExecuteTask.addSecs(allTasks[i]->getBeginningTime().secsTo(allTasks[i]->getEndTime()));
+            //workersData[i].timeToExecuteTask += allTasks[i]
+            }
+    }
+
     }
     for (int i = 0 ; i < workersList.size(); ++i) {
-        workersData[i].moneyGained /= workersData[i].tasksExecuted;
         ui->individualWorkersTable->setCellWidget(i , 0 , new QLabel(workersData[i].name));
-        ui->individualWorkersTable->setCellWidget(i , 2 , new QLabel(QString::number(workersData[i].tasksExecuted)));
-        ui->individualWorkersTable->setCellWidget(i , 3 , new QLabel(QString::number(workersData[i].moneyGained)));
+        ui->individualWorkersTable->setCellWidget(i , 1 , new QLabel(QString::number(workersData[i].tasksExecuted)));
+        ui->individualWorkersTable->setCellWidget(i , 2 , new QLabel(QString::number(workersData[i].timeToExecuteTask.second())));
+        ui->individualWorkersTable->setCellWidget(i , 3 , new QLabel(QString::number(workersData[i].timeToExecuteTask.second() / workersData[i].tasksExecuted)));
+        ui->individualWorkersTable->setCellWidget(i , 4 , new QLabel(QString::number(workersData[i].moneyGained)));
     }
 
 }
 
+//------------------------------------------------------------------------------

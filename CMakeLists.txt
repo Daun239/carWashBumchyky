@@ -33,6 +33,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         choosereporttoshow.h choosereporttoshow.cpp choosereporttoshow.ui
         taskdata.h
         workerData.h
+        addworker.h addworker.cpp addworker.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET BumchyckyWash APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

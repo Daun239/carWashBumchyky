@@ -4,6 +4,7 @@
 
 class workerData {
 public :
+    workerData() : tasksExecuted (0), moneyGained(0) , name ("") , timeToExecuteTask(0 , 0) { } ;
     int tasksExecuted;
     int moneyGained;
     QString name;
