@@ -19,6 +19,7 @@ public:
         number(number) , workers(workers) , type(type) , beginningTime(beginningTime) , endTime(endTime) {} ;
     taskData() { }
     taskData(taskData& other) { number = other.number ; workers = other.workers ; type = other.type ; beginningTime = other.beginningTime; endTime = other.endTime ; }
+    std::vector<int> indeces;
     // Setters
     void setTask(taskName type ) { this->type = type ; }
     void setWorkers(QList<QString>& workers ) { this->workers = workers ;}
